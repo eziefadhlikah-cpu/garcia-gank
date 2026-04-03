@@ -1,0 +1,139 @@
+-- GARCIA-GANK SCRIPT HUB 🔥
+
+local VIM = game:GetService("VirtualInputManager")
+local UIS = game:GetService("UserInputService")
+local player = game.Players.LocalPlayer
+local camera = workspace.CurrentCamera
+
+-- GUI
+local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+gui.Name = "GarciaGankHub"
+
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 260, 0, 170)
+frame.Position = UDim2.new(0.5, -130, 0.5, -85)
+frame.BackgroundColor3 = Color3.fromRGB(15,15,15)
+
+-- TITLE
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1,0,0,40)
+title.Text = "⚡ GARCIA-GANK ⚡"
+title.TextColor3 = Color3.fromRGB(0,255,255)
+title.BackgroundTransparency = 1
+title.TextScaled = true
+
+-- SUB
+local sub = Instance.new("TextLabel", frame)
+sub.Size = UDim2.new(1,0,0,20)
+sub.Position = UDim2.new(0,0,0.25,0)
+sub.Text = "SCRIPT HUB"
+sub.TextColor3 = Color3.fromRGB(255,0,255)
+sub.BackgroundTransparency = 1
+sub.TextScaled = true
+
+-- START BUTTON
+local startBtn = Instance.new("TextButton", frame)
+startBtn.Size = UDim2.new(0.8,0,0,35)
+startBtn.Position = UDim2.new(0.1,0,0.45,0)
+startBtn.Text = "START"
+startBtn.BackgroundColor3 = Color3.fromRGB(0,170,0)
+startBtn.TextColor3 = Color3.new(1,1,1)
+startBtn.TextScaled = true
+
+-- HIDE
+local hideBtn = Instance.new("TextButton", frame)
+hideBtn.Size = UDim2.new(0.35,0,0,25)
+hideBtn.Position = UDim2.new(0.1,0,0.75,0)
+hideBtn.Text = "HIDE"
+hideBtn.BackgroundColor3 = Color3.fromRGB(80,80,80)
+
+-- CLOSE
+local closeBtn = Instance.new("TextButton", frame)
+closeBtn.Size = UDim2.new(0.35,0,0,25)
+closeBtn.Position = UDim2.new(0.55,0,0.75,0)
+closeBtn.Text = "CLOSE"
+closeBtn.BackgroundColor3 = Color3.fromRGB(170,0,0)
+
+-- DRAG
+local dragging, dragStart, startPos
+frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = frame.Position
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        frame.Position = UDim2.new(
+            startPos.X.Scale,
+            startPos.X.Offset + delta.X,
+            startPos.Y.Scale,
+            startPos.Y.Offset + delta.Y
+        )
+    end
+end)
+
+UIS.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
+
+-- LOGIC
+local running = false
+local visible = true
+
+startBtn.MouseButton1Click:Connect(function()
+    running = not running
+    startBtn.Text = running and "STOP" or "START"
+    startBtn.BackgroundColor3 = running and Color3.fromRGB(170,0,0) or Color3.fromRGB(0,170,0)
+end)
+
+hideBtn.MouseButton1Click:Connect(function()
+    frame.Visible = false
+    visible = false
+end)
+
+closeBtn.MouseButton1Click:Connect(function()
+    gui:Destroy()
+end)
+
+-- DELETE KEY TOGGLE GUI
+UIS.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.Delete then
+        visible = not visible
+        frame.Visible = visible
+    end
+end)
+
+-- LOOP MAIN
+task.spawn(function()
+    while true do
+        if running then
+            -- HOLD E + F
+            VIM:SendKeyEvent(true, Enum.KeyCode.E, false, game)
+            VIM:SendKeyEvent(true, Enum.KeyCode.F, false, game)
+
+            -- AUTO CLICK TENGAH LAYAR
+            local viewport = camera.ViewportSize
+            local x = viewport.X / 2
+            local y = viewport.Y / 2
+
+            for i = 1, 40 do -- 4 detik / 0.1 = 40 klik
+                VIM:SendMouseButtonEvent(x, y, 0, true, game, 0)
+                VIM:SendMouseButtonEvent(x, y, 0, false, game, 0)
+                task.wait(0.1)
+            end
+
+            -- RELEASE E + F
+            VIM:SendKeyEvent(false, Enum.KeyCode.E, false, game)
+            VIM:SendKeyEvent(false, Enum.KeyCode.F, false, game)
+
+        else
+            task.wait(0.1)
+        end
+    end
+end)

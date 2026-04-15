@@ -1,0 +1,24 @@
+-- Script untuk Executor (Client-Side)
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ToggleEvent = ReplicatedStorage:FindFirstChild("ToggleAFKMoney")
+
+if ToggleEvent and ToggleEvent:IsA("RemoteEvent") then
+    -- Mengaktifkan fitur AFK Money dari sisi client
+    ToggleEvent:FireServer(true)
+    print("Berhasil mengirim sinyal ON ke server!")
+else
+    warn("RemoteEvent 'ToggleAFKMoney' tidak ditemukan di game ini.")
+end
+
+-- Contoh Loop sederhana untuk memantau uang di UI (Hanya Visual/Logging)
+local player = game.Players.LocalPlayer
+local leaderstats = player:WaitForChild("leaderstats", 5)
+
+if leaderstats then
+    local money = leaderstats:FindFirstChild("Money")
+    if money then
+        money.Changed:Connect(function(val)
+            print("Saldo saat ini: " .. tostring(val))
+        end)
+    end
+end
